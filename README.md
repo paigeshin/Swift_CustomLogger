@@ -1,5 +1,7 @@
 # Logging Ideas for Swift 
 
+https://betterprogramming.pub/ios-14s-new-logger-api-vs-oslog-ef88bb2ec237
+
 ```swift
 class ViewController: UIViewController {
 
