@@ -127,3 +127,113 @@ struct Log: TextOutputStream {
 
 var logger = Log()
 ```
+
+# Viable Solution
+```swift
+
+//
+//  ContentView.swift
+//  OSLogStoreTesting
+//
+//  Created by bbruns on 23/12/2021.
+//  Based on Peter Steinberger (23.08.20): https://github.com/steipete/OSLogTest/blob/master/LoggingTest/ContentView.swift.
+//
+import SwiftUI
+import OSLog
+import Combine
+
+let subsystem = "com.bbruns.OSLogStoreTesting"
+
+func getLogEntries() throws -> [OSLogEntryLog] {
+    let logStore = try OSLogStore(scope: .currentProcessIdentifier)
+    let oneHourAgo = logStore.position(date: Date().addingTimeInterval(-3600))
+    let allEntries = try logStore.getEntries(at: oneHourAgo)
+
+    return allEntries
+        .compactMap { $0 as? OSLogEntryLog }
+        .filter { $0.subsystem == subsystem }
+}
+
+struct SendableLog: Codable {
+    let level: Int
+    let date, subsystem, category, composedMessage: String
+}
+
+func sendLogs() {
+    let logs = try! getLogEntries()
+    let sendLogs: [SendableLog] = logs.map({ SendableLog(level: $0.level.rawValue,
+                                                                 date: "\($0.date)",
+                                                                 subsystem: $0.subsystem,
+                                                                 category: $0.category,
+                                                                 composedMessage: $0.composedMessage) })
+    print(sendLogs)
+    // Convert object to JSON
+    let jsonData = try? JSONEncoder().encode(sendLogs)
+    print(jsonData)
+    
+    // Send to my API
+//    let url = URL(string: "http://x.x.x.x:8000")! // IP address and port of Python server
+//    var request = URLRequest(url: url)
+//    request.httpMethod = "POST"
+//    request.httpBody = jsonData
+//
+//    let session = URLSession.shared
+//    let task = session.dataTask(with: request) { (data, response, error) in
+//        if let httpResponse = response as? HTTPURLResponse {
+//            print(httpResponse.statusCode)
+//        }
+//    }
+//    task.resume()
+}
+
+struct ContentView: View {
+    let logger = Logger(subsystem: subsystem, category: "main")
+
+    var logLevels = ["Default", "Info", "Debug", "Error", "Fault"]
+    @State private var selectedLogLevel = 0
+
+    init() {
+        logger.log("SwiftUI is initializing the main ContentView")
+    }
+
+    var body: some View {
+        return VStack {
+            Text("This is a sample project to test the new logging features of iOS 15.")
+                .padding()
+
+            Picker(selection: $selectedLogLevel, label: Text("Choose Log Level")) {
+                ForEach(0 ..< logLevels.count) {
+                    Text(self.logLevels[$0])
+                }
+            }.frame(width: 400, height: 150, alignment: .center)
+
+            Button(action: {
+                switch(selectedLogLevel) {
+                case 0:
+                    logger.log("Default log message")
+                case 1:
+                    logger.info("Info log message")
+                case 2:
+                    logger.debug("Debug log message")
+                case 3:
+                    logger.error("Error log message")
+                default: // 4
+                    logger.fault("Fault log message")
+                }
+            }) {
+                Text("Log with Log Level \(logLevels[selectedLogLevel])")
+            }.padding()
+            
+            Button(action: sendLogs) {
+                Text("Send logs to developers")
+            }
+        }
+    }
+}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
+```
