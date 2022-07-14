@@ -6,6 +6,8 @@ https://stackoverflow.com/questions/70454673/how-do-i-view-logs-from-a-remote-io
 
 https://developer.apple.com/videos/play/wwdc2020/10168/
 
+https://stackoverflow.com/questions/44537133/how-to-write-application-logs-to-file-and-get-them
+
 ```swift
 class ViewController: UIViewController {
 
