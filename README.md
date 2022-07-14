@@ -243,3 +243,15 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 ```
+
+# Log Level
+
+Debug: Userful only during debugging
+
+Info: Helpful but not essential for troubleshooting
+
+Notice(Default): Essential for troubleshooting 
+
+Error: Error seen during execution
+
+Fault: Bug in program
