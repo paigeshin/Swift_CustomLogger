@@ -1,7 +1,10 @@
 # Logging Ideas for Swift 
 
 https://betterprogramming.pub/ios-14s-new-logger-api-vs-oslog-ef88bb2ec237
+
 https://stackoverflow.com/questions/70454673/how-do-i-view-logs-from-a-remote-ios-device-using-the-unified-logging-system
+
+https://developer.apple.com/videos/play/wwdc2020/10168/
 
 ```swift
 class ViewController: UIViewController {
